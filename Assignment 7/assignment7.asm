@@ -32,13 +32,13 @@ push rsi
 call htoa  ;i am getting error here
 rw 01,msg1,msglen1
 pop rsi
-mov rax,[rbp]
+mov rax,[rsi]
 mov qword[result],rax
-push rbp
+push rsi
 call htoa
 rw 01,msg2,msglen2
-pop rbp
-add rbp,08h
+pop rsi
+add rsi,08h
 dec byte[cnt]
 jnz labelForPrint1
 

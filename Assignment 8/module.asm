@@ -1,38 +1,73 @@
-%macro rw 3
-mov rax, %1
-mov rdi, 1
-mov rsi, %2
-mov rdx, %3
-syscall
+%macro scall 4
+    mov rax,%1
+    mov rdi,%2
+    mov rsi,%3
+    mov rdx,%4
+    syscall
 %endmacro
 
-
 section .data
-count db 16h
+    extern msg6,len6,scount,ncount,chacount,new,new_len
 
 section .bss
-resultarr resb 16
+    extern cnt,cnt2,cnt3,scall,buffer
 
 section .text
-global htoa
-extern result
 
-htoa:
-mov rax, qword[result]
-mov byte[count],16
-mov rbp,resultarr
-label1:
-rol rax,04
-mov bl,al
-and bl,0Fh
-cmp bl,09h
-jle label2
-add bl,07h
-label2:
-add bl,30h
-mov [rbp],bl
-inc rbp
-dec byte[count]
-jnz label1
-rw 01,resultarr,16
+global main2
+
+main2:
+
+global spaces,enters,occ
+
+spaces:
+mov rsi,buffer
+
+up:
+mov al, byte[rsi]
+cmp al,20H
+jne next3
+inc byte[scount]
+next3:
+inc rsi
+dec byte[cnt]
+jnz up
+add byte[scount], 30h
+scall 1,1,scount, 2
+scall 1,1,new,new_len
+ret
+
+
+enters:
+mov rsi,buffer
+
+up2:
+mov al, byte[rsi]
+cmp al,0AH
+jne next5
+inc byte[ncount]
+next5:
+inc rsi
+dec byte[cnt2]
+jnz up2
+add byte[ncount], 30h
+scall 1,1,ncount, 2
+scall 1,1,new,new_len
+ret
+
+occ:
+mov rsi,buffer
+up3:
+mov al, byte[rsi]
+cmp al,bl
+jne next7
+inc byte[chacount]
+next7:
+inc rsi
+dec byte[cnt3]
+jnz up3
+add byte[chacount], 30h
+scall 1,1,msg6,len6
+scall 1,1,chacount, 1
+scall 1,1,new,new_len
 ret

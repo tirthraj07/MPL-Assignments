@@ -14,6 +14,12 @@ msglen1 equ $-msg1
 msg2 db 0Ah,0Dh
 msglen2 equ $-msg2
 
+msg3 db "Before",0xA,0xD
+msg3len equ $-msg3
+
+msg4 db "After",0xA,0xD
+msg4len equ $-msg4
+
 result dq 00h
 count db 16h
 cnt dw 05h
@@ -25,11 +31,13 @@ section .text
 global _start
 _start:
 
+rw 01, msg3, msg3len
+
 mov rsi, sarr
 labelForPrint1:
 mov qword[result], rsi
 push rsi
-call htoa  ;i am getting error here
+call htoa  
 rw 01,msg1,msglen1
 pop rsi
 mov rax,[rsi]
@@ -43,14 +51,39 @@ dec byte[cnt]
 jnz labelForPrint1
 
 mov byte[cnt],05h
-
-mov cx, word[cnt]
+xor rcx, rcx
+mov cl, byte[cnt]
 mov rsi, sarr+32
 mov rdi, darr+16
 std
 rep movsq
-	
-	
+
+push rdi
+
+rw 01, msg4, msg4len
+
+pop rdi
+
+add rdi, 08h
+
+
+
+labelForPrint2:
+mov qword[result], rdi
+push rdi
+call htoa  
+rw 01,msg1,msglen1
+pop rdi
+mov rax,[rdi]
+mov qword[result],rax
+push rdi
+call htoa
+rw 01,msg2,msglen2
+pop rdi
+add rdi,08h
+dec byte[cnt]
+jnz labelForPrint2
+
 mov rax, 60
 mov rdi, 00
 syscall
